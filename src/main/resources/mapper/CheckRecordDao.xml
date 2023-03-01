@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lyz.his.dao.CheckRecordDao">
+    <insert id="addCheckItemRecord" parameterType="list">
+        insert into checkrecord (registerId,checkItemId,amount) values
+        <foreach collection="list" separator="," item="checkRecord">
+            (#{checkRecord.registerId},#{checkRecord.checkItemId},#{checkRecord.amount})
+        </foreach>
+    </insert>
+    <select id="listCheckRecordSub" resultMap="CheckRecordSubMap"
+            parameterType="int">
+        select cr.*, ci.id cid, ci.itemName, ci.price
+        from checkitem ci,
+             checkrecord cr
+        where cr.checkitemid = ci.id
+          and cr.registerId = #{registerId}
+    </select>
+    <resultMap type="com.lyz.his.po.CheckRecordSub" id="CheckRecordSubMap">
+        <result column="id" property="id"/>
+        <result column="registerId" property="registerId"/>
+        <result column="checkItemId" property="checkItemId"/>
+        <result column="amount" property="amount"/>
+        <result column="payStatus" property="payStatus"/>
+        <association property="ci" javaType="com.lyz.his.po.CheckItem">
+            <result column="cid" property="id"/>
+            <result column="itemName" property="itemName"/>
+            <result column="price" property="price"/>
+        </association>
+    </resultMap>
+    <update id="updateCheckItemRecord" parameterType="com.lyz.his.po.CheckRecordExt">
+        update checkrecord set payStatus=#{payStatus} where
+
+        <foreach collection="list" item="id" open="id in (" close=")"
+                 separator=",">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

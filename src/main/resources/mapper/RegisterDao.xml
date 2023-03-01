@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lyz.his.dao.RegisterDao">
+    <select id="findRegisterByCaseNumber" parameterType="int" resultMap="RegisterMap">
+        select r.*, d.deptName, u.realName uname, reg.registName
+        from register r,
+             dept d,
+             user u,
+             registlevel reg
+        where r.deptId = d.id
+          and r.userId = u.userId
+          and r.registerLevelId = reg.id
+          and r.caseNumber = #{caseNumber}
+          and r.DelMark = 1
+          and visitDate = (select max(visitDate)
+                           from register
+                           where caseNumber = #{caseNumber})
+    </select>
+    <select id="findRegisterByidNumber" parameterType="int" resultMap="RegisterMap">
+        select r.*, d.deptName, u.realName uname, reg.registName
+        from register r,
+             dept d,
+             user u,
+             registlevel reg
+        where r.deptId = d.id
+          and r.userId = u.userId
+          and r.registerLevelId = reg.id
+          and r.idNumber = #{idNumber}
+          and r.DelMark = 1
+          and visitDate = (select max(visitDate)
+                           from register
+                           where idNumber = #{idNumber})
+    </select>
+    <resultMap type="com.lyz.his.po.SubRegister" id="RegisterMap">
+        <result column="id" property="id"/>
+        <result column="caseNumber" property="caseNumber"/>
+        <result column="realName" property="realName"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+        <result column="idNumber" property="idNumber"/>
+        <result column="visitDate" property="visitDate"/>
+        <result column="visitState" property="visitState"/>
+        <result column="DelMark" property="DelMark"/>
+        <association property="registLevel" javaType="com.lyz.his.po.RegistLevel">
+            <result column="registName" property="registName"/>
+        </association>
+        <association property="dept" javaType="com.lyz.his.po.Dept">
+            <result column="deptName" property="deptName"/>
+        </association>
+        <association property="user" javaType="com.lyz.his.po.User">
+            <result column="uname" property="realName"/>
+        </association>
+    </resultMap>
+</mapper>
